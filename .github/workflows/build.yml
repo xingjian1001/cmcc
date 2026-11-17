@@ -19,11 +19,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: 安装 Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: 接受许可
-        run: yes | sdkmanager --licenses > /dev/null || true
+      - name: 看看自带 SDK 有什么
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls "$ANDROID_HOME/platforms" 2>/dev/null || echo "no platforms dir"
+          ls "$ANDROID_HOME/build-tools" 2>/dev/null || echo "no build-tools dir"
 
       - name: 安装 Gradle
         uses: gradle/actions/setup-gradle@v3

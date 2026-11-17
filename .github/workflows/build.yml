@@ -1,0 +1,28 @@
+name: build-apk
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 准备源码
+        run: |
+          ls -la
+          shopt -s nullglob
+          for z in *.zip; do echo "解压 $z"; unzip -q -o "$z" -d .; done
+          ls -la
+          test -f cmcc_hook/settings.gradle || test -f settings.gradle
+      - uses: android-actions/setup-android@v3
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v3
+      - name: 编译
+        run: |
+          if [ -f cmcc_hook/settings.gradle ]; then cd cmcc_hook; fi
+          gradle assembleDebug --no-daemon --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: '**/*.apk'
